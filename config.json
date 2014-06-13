@@ -1,0 +1,9 @@
+{
+    "admin_outlet":{
+        "engine_url":"casa-engine.paulgray.net"
+    },
+    "engine":{
+        "cors_value":"*"
+    }
+}
+

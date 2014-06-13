@@ -1,28 +1,15 @@
 
 FROM dockerfile/ubuntu
 
+###Dependencies
 RUN sudo apt-get install -y curl sqlite3 libsqlite3-dev git
-
 RUN apt-get install -y ruby ruby-dev ruby-bundler
-
 RUN apt-get install -y libmysqlclient-dev freetds-dev
 
 RUN curl -L -0 https://pfgray.github.io/casa-bootstrap/local | bash -s - -db sqlite
 
-WORKDIR /root/casa/casa-environment
-
-RUN sed -i 's/mysql2/sqlite/g' config/dev.json
-
-RUN bundle exec casa-environment configure
-
-
 WORKDIR /root/casa
-
 RUN git clone https://github.com/IMSGlobal/casa-admin-outlet
-
-WORKDIR /root/casa/casa-admin-outlet
-
-RUN bundle install
 
 RUN  sudo add-apt-repository ppa:chris-lea/node.js && sudo apt-get update && sudo apt-get install -y python-software-properties python g++ make nodejs
 
@@ -36,6 +23,19 @@ RUN \
   add-apt-repository -y ppa:webupd8team/java && \
   apt-get update && \
   apt-get install -y oracle-java7-installer
+
+###Configuration
+ADD setupConfig.js /root/casa/setupConfig.js
+ADD config.json /root/casa/config.json
+WORKDIR /root/casa
+RUN node setupConfig.js
+
+WORKDIR /root/casa/casa-environment
+RUN sed -i 's/mysql2/sqlite/g' config/dev.json
+RUN bundle exec casa-environment configure
+WORKDIR /root/casa/casa-admin-outlet
+RUN bundle install
+
 
 RUN bundle exec blocks build
 
