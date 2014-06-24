@@ -13,6 +13,10 @@ RUN git clone https://github.com/IMSGlobal/casa-admin-outlet
 
 RUN  sudo add-apt-repository ppa:chris-lea/node.js && sudo apt-get update && sudo apt-get install -y python-software-properties python g++ make nodejs
 
+
+
+WORKDIR /root/casa/casa-admin-outlet
+
 RUN npm install
 RUN npm install bower -g
 RUN bower install --allow-root
@@ -25,18 +29,16 @@ RUN \
   apt-get install -y oracle-java7-installer
 
 ###Configuration
-ADD setupConfig.js /root/casa/setupConfig.js
-ADD config.json /root/casa/config.json
 WORKDIR /root/casa
-RUN node setupConfig.js
+ADD ./environment-config.json /root/casa/casa-environment/config/dev.json
+ADD ./admin-outlet-config.js /root/casa/casa-admin-outlet/src/config/engine.js
 
 WORKDIR /root/casa/casa-environment
-RUN sed -i 's/mysql2/sqlite/g' config/dev.json
 RUN bundle exec casa-environment configure
+
+
 WORKDIR /root/casa/casa-admin-outlet
 RUN bundle install
-
-
 RUN bundle exec blocks build
 
 WORKDIR /root/casa
@@ -49,4 +51,3 @@ EXPOSE 3000
 EXPOSE 5000
 
 CMD ["./app.sh"]
-
