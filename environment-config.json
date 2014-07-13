@@ -33,7 +33,7 @@
           "admin":{
             "username":"admin",
             "password":"password",
-            "origin":"*"
+            "origin":"http://localhost"
           }
         },
         "attributes":{
